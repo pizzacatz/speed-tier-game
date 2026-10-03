@@ -101,7 +101,7 @@ Vanilla TypeScript + Vite (no framework), plus `vite-plugin-pwa` for the service
 
 ## Decisions round 3 (2026-10-03)
 - **Show the alignment name in full**, including alignments that don't touch Speed, e.g. `Adamant (+Atk −SpA)`, so the player learns what every alignment does. (This replaces "only +Spe/Neutral/−Spe".) Champions has 21 alignments and only **Serious** is neutral. Map mainline-only neutral natures from Limitless (Hardy, Docile, Bashful, Quirky) to Serious. Get the multipliers from the champions-logic `stat_alignment` tool, never from memory.
-- **Speed SP:** show it as **Max Speed** (32 SP) or **Min Speed** (0 SP). A −Spe alignment gets Min Speed; every other alignment gets Max Speed. There's no Trick Room exception, and SP is **never** randomised, so random sets follow the same rule.
+- **Speed SP:** show it as **Max Speed** (32 SP) or **Min Speed** (0 SP). The card shows the stat after SP but before the alignment, e.g. "Max Speed: 154". Max vs Min is rolled **independently of the alignment** (75% Max / 25% Min), so the card never gives away the alignment. The alignment's effects only appear in the answer reveal.
 - **Tailwind:** active **5%** of the time for *any* Pokémon. **Trick Room:** active in **5%** of questions. Neither depends on the moveset.
 - **Scoring:** streak + best only, no timer.
 - **Deliberate ties:** 5% of questions, raised to **10% in Chaos** (all toggles on). The game builds the tie from any mix of alignment / item / field / stage changes.
