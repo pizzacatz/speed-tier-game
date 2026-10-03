@@ -139,8 +139,9 @@ export class Generator {
 
   private card(mon: Mon, s: Settings): Card & { moves: string[] } {
     const set = this.buildSet(mon, s);
+    // Max/Min Speed is rolled independently of alignment so Min Speed never reveals a −Spe alignment.
     const c = {
-      mon, ...set, maxSpeed: this.rng() < 0.75, // independent of alignment so Min Speed never reveals a −Spe alignment itemConsumed: false, stage: 0, stageSource: '',
+      mon, ...set, maxSpeed: this.rng() < 0.75, itemConsumed: false, stage: 0, stageSource: '',
       status: null as Card['status'], tailwind: false, speed: 0, steps: [] as Step[],
     };
     const e = s.effects, rng = this.rng;
