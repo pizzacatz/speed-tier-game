@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#18181b" />
+  <meta name="description" content="Who moves first? A Pokémon Champions Reg M-C speed tier trainer." />
+  <link rel="icon" href="/speed-tier-game/icon.svg" type="image/svg+xml" />
+  <title>Speed Tier Game</title>
+</head>
+<body>
+  <header>
+    <h1>Who moves first?</h1>
+    <div class="score"><span>Streak <b id="streak">0</b></span><span>Best <b id="best">0</b></span></div>
+    <button id="open-settings" aria-label="Settings">⚙</button>
+  </header>
+  <p id="meta" class="meta"></p>
+  <p id="field" class="field"></p>
+  <main id="board">
+    <button class="card" id="card-a" data-pick="a"></button>
+    <button class="tie" id="tie" data-pick="tie">Tie<kbd>↓</kbd></button>
+    <button class="card" id="card-b" data-pick="b"></button>
+  </main>
+  <section id="result" hidden></section>
+  <p class="keys"><kbd>←</kbd> left · <kbd>→</kbd> right · <kbd>↓</kbd>/<kbd>Space</kbd> tie · <kbd>Enter</kbd> next</p>
+
+  <dialog id="settings">
+    <form method="dialog" class="settings">
+      <h2>Settings</h2>
+      <label class="row">List <select id="list"></select></label>
+      <fieldset>
+        <legend>Effects</legend>
+        <div id="effects"></div>
+        <button type="button" id="chaos">Chaos: all on</button>
+        <button type="button" id="calm">All off</button>
+      </fieldset>
+      <label class="row"><input type="checkbox" id="close" /> Close mode (final speeds within 10)</label>
+      <fieldset>
+        <legend>Custom lists</legend>
+        <div class="row">
+          <input id="cl-name" placeholder="List name" />
+          <button type="button" id="cl-delete">Delete</button>
+        </div>
+        <input id="cl-search" type="search" placeholder="Search Pokémon" />
+        <p id="cl-count"></p>
+        <div id="cl-mons" class="mons"></div>
+        <button type="button" id="cl-save">Save list</button>
+      </fieldset>
+      <p class="meta" id="data-info"></p>
+      <button value="close" class="done">Done</button>
+    </form>
+  </dialog>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
