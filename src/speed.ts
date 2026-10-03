@@ -37,8 +37,12 @@ export function stageApply(stat: number, stage: number): number {
 
 export function finalSpeed(side: Side, alignments: Alignments): { speed: number; steps: Step[] } {
   const mult = alignmentMult(alignments, side.alignment);
-  let s = statSpeed(side.baseSpe, side.maxSpeed ? 32 : 0, mult);
-  const steps: Step[] = [{ label: `${side.maxSpeed ? 'Max' : 'Min'} Speed, ${side.alignment}`, value: s }];
+  const sp = side.maxSpeed ? 32 : 0;
+  let s = statSpeed(side.baseSpe, sp, mult);
+  const steps: Step[] = [
+    { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (base ${side.baseSpe} + 20 + ${sp} SP)`, value: side.baseSpe + 20 + sp },
+    { label: `${side.alignment} ×${mult}`, value: s },
+  ];
   if (side.stage) {
     s = stageApply(s, side.stage);
     steps.push({ label: `${side.stage > 0 ? '+' : ''}${side.stage} stage`, value: s });
