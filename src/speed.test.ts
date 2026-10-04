@@ -21,3 +21,5 @@ test('Trick Room flips, ties stay ties', () => {
   assert.equal(whoMovesFirst(100, 90, true), 'b');
   assert.equal(whoMovesFirst(90, 90, true), 'tie');
 });
+test('Unmodified: no alignment, no SP = base + 20', () =>
+  assert.equal(spe({ baseSpe: 102, alignment: 'Jolly', maxSpeed: false, useAlignment: false, useInvestment: false }), 122));

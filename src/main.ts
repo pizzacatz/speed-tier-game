@@ -24,7 +24,7 @@ interface State {
 }
 const KEY = 'speed-tier-game';
 const defaults: State = {
-  settings: { effects: Object.fromEntries(Object.keys(EFFECTS).map((k) => [k, false])) as Record<Effect, boolean>, close: false },
+  settings: { effects: Object.fromEntries(Object.keys(EFFECTS).map((k) => [k, false])) as Record<Effect, boolean>, close: false, natures: true, investment: true },
   list: 'Meta',
   custom: {},
   streaks: {},
@@ -64,8 +64,8 @@ function cardHtml(c: Card, key: string) {
   ].filter(Boolean);
   return `${c.mon.sprite ? `<img src="${SPRITES}${c.mon.sprite}.webp" alt="" width="96" height="96" decoding="async">` : ''}
     <span class="name">${esc(c.mon.name)}</span>
-    <span class="line">${esc(c.alignment)}</span>
-    <span class="line"><b>${c.maxSpeed ? 'Max Speed' : 'Min Speed'}</b></span>
+    ${c.natures ? `<span class="line">${esc(c.alignment)}</span>` : ''}
+    ${c.investment ? `<span class="line"><b>${c.maxSpeed ? 'Max Speed' : 'Min Speed'}</b></span>` : ''}
     <span class="sub">${esc(itemName(c))}</span>
     <span class="sub">${esc(base.abilities[c.ability] ?? c.ability)}</span>
     <span class="tag">${tags.join(' · ')}</span>
@@ -110,7 +110,7 @@ function answer(pickAns: Answer) {
   $(el[pickAns]).classList.add('picked', right ? 'right' : 'wrong');
   if (!right) $(el[q.answer]).classList.add('right');
   const who = q.answer === 'tie' ? 'Speed tie' : `${(q.answer === 'a' ? q.a : q.b).mon.name} moves first`;
-  const col = (c: Card) => `<div><div>${esc(c.mon.name)}</div><div>${alignLabel(c.alignment)}</div><div class="big">${c.speed}</div><ol>${c.steps
+  const col = (c: Card) => `<div><div>${esc(c.mon.name)}</div>${c.natures ? `<div>${alignLabel(c.alignment)}</div>` : ''}<div class="big">${c.speed}</div><ol>${c.steps
     .map((st) => `<li>${esc(st.label)} → ${st.value}</li>`).join('')}</ol></div>`;
   $('result').innerHTML = `<h2 class="${right ? 'ok' : 'no'}">${right ? '✓ Correct' : '✗ Wrong'}: ${esc(who)}${q.field.trickRoom ? ' (Trick Room: slower moves first)' : ''}</h2>
     <div class="cols">${col(q.a)}${col(q.b)}</div><button id="next">Next <kbd>Enter</kbd></button>`;
@@ -142,6 +142,8 @@ function renderEffects() {
   $('effects').innerHTML = (Object.keys(EFFECTS) as Effect[]).map((k) =>
     `<label><input type="checkbox" data-effect="${k}" ${state.settings.effects[k] ? 'checked' : ''}> ${EFFECTS[k]}</label>`).join('');
   $<HTMLInputElement>('close').checked = state.settings.close;
+  $<HTMLInputElement>('natures').checked = state.settings.natures;
+  $<HTMLInputElement>('investment').checked = state.settings.investment;
 }
 let draft = new Set<string>();
 function renderMons() {
@@ -165,6 +167,8 @@ $('effects').onchange = (e) => {
   state.settings.effects[t.dataset.effect as Effect] = t.checked;
 };
 $('close').onchange = (e) => { state.settings.close = (e.target as HTMLInputElement).checked; };
+$('natures').onchange = (e) => { state.settings.natures = (e.target as HTMLInputElement).checked; };
+$('investment').onchange = (e) => { state.settings.investment = (e.target as HTMLInputElement).checked; };
 const setAll = (on: boolean) => { for (const k of Object.keys(EFFECTS) as Effect[]) state.settings.effects[k] = on; renderEffects(); };
 $('chaos').onclick = () => setAll(true);
 $('calm').onclick = () => setAll(false);

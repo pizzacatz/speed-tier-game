@@ -39,6 +39,8 @@ export type Effect = keyof typeof EFFECTS;
 export interface Settings {
   effects: Record<Effect, boolean>;
   close: boolean;
+  natures: boolean; // show and apply stat alignments
+  investment: boolean; // show and apply Max/Min Speed SP
 }
 export const isChaos = (s: Settings) => Object.values(s.effects).every(Boolean);
 
@@ -59,6 +61,8 @@ export interface Card {
   real: boolean;
   alignment: string;
   maxSpeed: boolean;
+  natures: boolean;
+  investment: boolean;
   item: string | null;
   itemConsumed: boolean;
   ability: string;
@@ -141,7 +145,7 @@ export class Generator {
     const set = this.buildSet(mon, s);
     // Max/Min Speed is rolled independently of alignment so Min Speed never reveals a −Spe alignment.
     const c = {
-      mon, ...set, maxSpeed: this.rng() < 0.75, itemConsumed: false, stage: 0, stageSource: '',
+      mon, ...set, maxSpeed: this.rng() < 0.75, natures: s.natures, investment: s.investment, itemConsumed: false, stage: 0, stageSource: '',
       status: null as Card['status'], tailwind: false, speed: 0, steps: [] as Step[],
     };
     const e = s.effects, rng = this.rng;
@@ -170,7 +174,8 @@ export class Generator {
     if (ab === 'quick-feet' && c.status) abilityMult = 1.5;
     const heldItem = c.itemConsumed ? null : c.item;
     const r = finalSpeed({
-      baseSpe: c.mon.spe, alignment: c.alignment, maxSpeed: c.maxSpeed, stage: c.stage, abilityMult,
+      baseSpe: c.mon.spe, alignment: c.natures ? c.alignment : 'Serious', maxSpeed: c.investment && c.maxSpeed,
+      useAlignment: c.natures, useInvestment: c.investment, stage: c.stage, abilityMult,
       itemMult: heldItem === 'choice-scarf' ? 1.5 : heldItem === 'iron-ball' ? 0.5 : 1,
       tailwind: c.tailwind, paralyzed: c.status === 'Paralysis', ignoreParalysis: ab === 'quick-feet',
     }, this.base.alignments);

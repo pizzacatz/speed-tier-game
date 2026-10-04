@@ -8,6 +8,8 @@ export interface Side {
   baseSpe: number;
   alignment: string;
   maxSpeed: boolean; // true = 32 SP, false = 0 SP
+  useInvestment?: boolean; // false = no SP shown (0 SP)
+  useAlignment?: boolean; // false = no alignment shown (neutral)
   stage: number; // -6..6
   abilityMult: number; // 1, 1.5 or 2 (already resolved against weather/status)
   itemMult: number; // 1, 1.5 (Choice Scarf) or 0.5 (Iron Ball)
@@ -36,13 +38,15 @@ export function stageApply(stat: number, stage: number): number {
 }
 
 export function finalSpeed(side: Side, alignments: Alignments): { speed: number; steps: Step[] } {
-  const mult = alignmentMult(alignments, side.alignment);
-  const sp = side.maxSpeed ? 32 : 0;
+  const mult = side.useAlignment === false ? 1 : alignmentMult(alignments, side.alignment);
+  const sp = side.useInvestment !== false && side.maxSpeed ? 32 : 0;
   let s = statSpeed(side.baseSpe, sp, mult);
   const steps: Step[] = [
-    { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (${side.baseSpe + 20} + ${sp} SP)`, value: side.baseSpe + 20 + sp },
-    { label: `${side.alignment} ×${mult}`, value: s },
+    side.useInvestment === false
+      ? { label: 'Speed (no SP)', value: side.baseSpe + 20 }
+      : { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (${side.baseSpe + 20} + ${sp} SP)`, value: side.baseSpe + 20 + sp },
   ];
+  if (side.useAlignment !== false) steps.push({ label: `${side.alignment} ×${mult}`, value: s });
   if (side.stage) {
     s = stageApply(s, side.stage);
     steps.push({ label: `${side.stage > 0 ? '+' : ''}${side.stage} stage`, value: s });
