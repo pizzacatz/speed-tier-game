@@ -108,3 +108,23 @@ Vanilla TypeScript + Vite (no framework), plus `vite-plugin-pwa` for the service
 - **Keyboard:** ← left, → right, ↓ or Space for Tie, Enter for next.
 - **A GitHub Action** rebuilds the data weekly from Limitless and deploys to Pages.
 - **Repo:** `speed-tier-game` → `<user>.github.io/speed-tier-game`.
+
+## Status: v1 finished (2026-10-04)
+Live at https://pizzacatz.github.io/speed-tier-game/ (repo pizzacatz/speed-tier-game). A GitHub Action refreshes the Limitless data every Monday.
+
+**Shipped**
+- **Who moves first?:** A / B / Speed tie.
+  - 80/20 real/random sets.
+  - Toggles: stat alignments, Max/Min Speed, and 8 effects, plus Chaos.
+  - Close mode, and deliberate ties at 5% (10% in Chaos).
+  - The full breakdown is only revealed after answering.
+- **How fast?:** type the Speed stat (base + 20).
+- **Lists:** Meta (top 20% of unique Pokémon), All M-C, and custom lists.
+- **General:** streaks per list and mode, offline PWA, keyboard shortcuts, games linkable by hash.
+- **Design audit:** `docs/design-audit.md`.
+
+**Later / ideas**
+- v1.1: a "most-missed" breakdown.
+- Untested: installing on a real phone and playing offline, 320px width and zoom, screen readers.
+- After each regulation change, run `npm run data:base` (needs the local champions-logic repo) and commit.
+- A leaderboard would need a backend, e.g. a Cloudflare Worker + KV.
