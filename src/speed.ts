@@ -46,7 +46,7 @@ export function finalSpeed(side: Side, alignments: Alignments): { speed: number;
       ? { label: 'Speed (no SP)', value: side.baseSpe + 20 }
       : { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (${side.baseSpe + 20} + ${sp} SP)`, value: side.baseSpe + 20 + sp },
   ];
-  if (side.useAlignment !== false) steps.push({ label: `${side.alignment} ×${mult}`, value: s });
+  if (side.useAlignment !== false) steps.push({ label: mult === 1 ? `${side.alignment} (no Speed change)` : `${side.alignment} ×${mult}`, value: s });
   if (side.stage) {
     s = stageApply(s, side.stage);
     steps.push({ label: `${side.stage > 0 ? '+' : ''}${side.stage} stage`, value: s });

@@ -10,14 +10,15 @@
 </head>
 <body>
   <header>
-    <nav class="modes">
-      <button id="mode-moves" data-mode="moves">Who moves first?</button>
-      <button id="mode-howfast" data-mode="howfast">How fast?</button>
-    </nav>
-    <div class="score"><span>Streak <b id="streak">0</b></span><span>Best <b id="best">0</b></span></div>
+    <h1>Speed Tier Game</h1>
+    <div class="score" aria-live="polite"><span>Streak <b id="streak">0</b></span><span>Best <b id="best">0</b></span></div>
     <button id="open-settings" aria-label="Settings">⚙</button>
   </header>
-  <p id="meta" class="meta"></p>
+  <nav class="modes" aria-label="Game">
+    <a id="mode-moves" href="#moves">Who moves first?</a>
+    <a id="mode-howfast" href="#howfast">How fast?</a>
+  </nav>
+  <button id="meta" class="meta-btn" type="button" aria-label="Change list"></button>
   <p id="field" class="field"></p>
   <section id="howfast" hidden>
     <form id="hf-form" class="hf">
@@ -29,11 +30,10 @@
   </section>
   <main id="board">
     <button class="card" id="card-a" data-pick="a"></button>
-    <button class="tie" id="tie" data-pick="tie">Tie<kbd>↓</kbd></button>
     <button class="card" id="card-b" data-pick="b"></button>
+    <button class="tie" id="tie" data-pick="tie">Speed tie <kbd>↓</kbd></button>
   </main>
-  <section id="result" hidden></section>
-  <p class="keys"><kbd>←</kbd> left · <kbd>→</kbd> right · <kbd>↓</kbd>/<kbd>Space</kbd> tie · <kbd>Enter</kbd> next</p>
+  <section id="result" hidden aria-live="polite"></section>
 
   <dialog id="settings">
     <form method="dialog" class="settings">
@@ -60,6 +60,7 @@
         </div>
         <input id="cl-search" type="search" placeholder="Search Pokémon" />
         <p id="cl-count"></p>
+        <p id="cl-error" class="error" role="alert" hidden></p>
         <div id="cl-mons" class="mons"></div>
         <button type="button" id="cl-save">Save list</button>
       </fieldset>

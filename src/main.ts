@@ -81,7 +81,7 @@ let answered = false;
 function renderScore() {
   $('streak').textContent = String(streak().cur);
   $('best').textContent = String(streak().best);
-  $('meta').textContent = `${state.list} · ${pool().length} Pokémon`;
+  $('meta').textContent = `List: ${state.list} · ${pool().length} Pokémon`;
 }
 
 function nextQuestion() {
@@ -120,6 +120,7 @@ function answer(pickAns: Answer) {
     <div class="cols">${col(q.a)}${col(q.b)}</div><button id="next">Next <kbd>Enter</kbd></button>`;
   $('result').hidden = false;
   $('next').onclick = nextQuestion;
+  $('result').scrollIntoView({ block: 'nearest' });
   renderScore();
 }
 
@@ -188,7 +189,10 @@ $('cl-mons').onchange = (e) => {
 };
 $('cl-save').onclick = () => {
   const name = $<HTMLInputElement>('cl-name').value.trim();
-  if (!name || builtIn[name] || draft.size < 2) return alert('Give the list a new name and pick at least two Pokémon.');
+  const err = !name ? 'Name the list.' : builtIn[name] ? `"${name}" is a built-in list; choose another name.` : draft.size < 2 ? 'Pick at least two Pokémon.' : '';
+  $('cl-error').textContent = err;
+  $('cl-error').hidden = !err;
+  if (err) return;
   state.custom[name] = [...draft];
   state.list = name;
   save();
@@ -254,11 +258,12 @@ function setMode(mode: State['mode']) {
   save();
   $('howfast').hidden = mode !== 'howfast';
   for (const id of ['board', 'field']) $(id).hidden = mode !== 'moves';
-  document.querySelector<HTMLElement>('.keys')!.hidden = mode !== 'moves';
-  $('mode-moves').classList.toggle('on', mode === 'moves');
-  $('mode-howfast').classList.toggle('on', mode === 'howfast');
+  $('mode-moves').toggleAttribute('aria-current', mode === 'moves');
+  $('mode-howfast').toggleAttribute('aria-current', mode === 'howfast');
   nextQuestion();
 }
-$('mode-moves').onclick = () => setMode('moves');
-$('mode-howfast').onclick = () => setMode('howfast');
-setMode(state.mode);
+// The mode lives in the URL hash so each game is linkable and Back/Forward switch between them.
+const modeFromHash = (): State['mode'] => (location.hash === '#howfast' ? 'howfast' : location.hash === '#moves' ? 'moves' : state.mode);
+window.addEventListener('hashchange', () => setMode(modeFromHash()));
+$('meta').onclick = () => $('open-settings').click();
+setMode(modeFromHash());
