@@ -65,7 +65,7 @@ function cardHtml(c: Card, key: string) {
   return `${c.mon.sprite ? `<img src="${SPRITES}${c.mon.sprite}.webp" alt="" width="96" height="96" decoding="async">` : ''}
     <span class="name">${esc(c.mon.name)}</span>
     <span class="line">${esc(c.alignment)}</span>
-    <span class="line"><b>${c.maxSpeed ? 'Max Speed' : 'Min Speed'}: ${c.mon.spe + 20 + (c.maxSpeed ? 32 : 0)}</b></span>
+    <span class="line"><b>${c.maxSpeed ? 'Max Speed' : 'Min Speed'}</b></span>
     <span class="sub">${esc(itemName(c))}</span>
     <span class="sub">${esc(base.abilities[c.ability] ?? c.ability)}</span>
     <span class="tag">${tags.join(' · ')}</span>
@@ -148,7 +148,7 @@ function renderMons() {
   const term = $<HTMLInputElement>('cl-search').value.trim().toLowerCase();
   const mons = [...base.mons].sort((a, b) => a.name.localeCompare(b.name)).filter((m) => !term || m.name.toLowerCase().includes(term));
   $('cl-mons').innerHTML = mons.map((m) =>
-    `<label><input type="checkbox" data-mon="${m.id}" ${draft.has(m.id) ? 'checked' : ''}> ${esc(m.name)} <small>${m.spe}</small></label>`).join('');
+    `<label><input type="checkbox" data-mon="${m.id}" ${draft.has(m.id) ? 'checked' : ''}> ${esc(m.name)}</label>`).join('');
   $('cl-count').textContent = `${draft.size} selected`;
 }
 function loadDraft() {
