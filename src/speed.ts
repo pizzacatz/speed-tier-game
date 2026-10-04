@@ -40,7 +40,7 @@ export function finalSpeed(side: Side, alignments: Alignments): { speed: number;
   const sp = side.maxSpeed ? 32 : 0;
   let s = statSpeed(side.baseSpe, sp, mult);
   const steps: Step[] = [
-    { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (base ${side.baseSpe} + 20 + ${sp} SP)`, value: side.baseSpe + 20 + sp },
+    { label: `${side.maxSpeed ? 'Max' : 'Min'} Speed (${side.baseSpe + 20} + ${sp} SP)`, value: side.baseSpe + 20 + sp },
     { label: `${side.alignment} ×${mult}`, value: s },
   ];
   if (side.stage) {
