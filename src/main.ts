@@ -19,6 +19,7 @@ const STAT: Record<string, string> = { atk: 'Atk', def: 'Def', spa: 'SpA', spd: 
 interface State {
   settings: Settings;
   list: string;
+  mode: 'moves' | 'howfast';
   custom: Record<string, string[]>;
   streaks: Record<string, { cur: number; best: number }>;
 }
@@ -26,6 +27,7 @@ const KEY = 'speed-tier-game';
 const defaults: State = {
   settings: { effects: Object.fromEntries(Object.keys(EFFECTS).map((k) => [k, false])) as Record<Effect, boolean>, close: false, natures: true, investment: true },
   list: 'Meta',
+  mode: 'moves',
   custom: {},
   streaks: {},
 };
@@ -46,7 +48,8 @@ const META = metaList(base, usage);
 const builtIn: Record<string, () => string[]> = { Meta: () => META, 'All M-C': () => base.mons.map((m) => m.id) };
 const listIds = (name: string) => (builtIn[name]?.() ?? state.custom[name] ?? META);
 const pool = (): Mon[] => listIds(state.list).map((id) => byId.get(id)).filter((m): m is Mon => !!m);
-const streak = () => (state.streaks[state.list] ??= { cur: 0, best: 0 });
+// Who-moves-first streaks keep their original key (the list name) so existing records survive.
+const streak = () => (state.streaks[state.mode === 'moves' ? state.list : `howfast:${state.list}`] ??= { cur: 0, best: 0 });
 
 // ---- rendering ----
 const alignLabel = (a: string) => {
@@ -82,6 +85,7 @@ function renderScore() {
 }
 
 function nextQuestion() {
+  if (state.mode === 'howfast') return nextHowFast();
   q = gen.next(pool(), state.settings);
   answered = false;
   $('result').hidden = true;
@@ -125,6 +129,10 @@ for (const id of ['card-a', 'card-b', 'tie']) $(id).addEventListener('click', (e
   answer((e.currentTarget as HTMLElement).dataset.pick as Answer);
 });
 document.addEventListener('keydown', (e) => {
+  if (state.mode === 'howfast') {
+    if (hfAnswered && e.key === 'Enter') { e.preventDefault(); nextHowFast(); }
+    return;
+  }
   if ((e.target as HTMLElement).closest('dialog') || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key;
   if (answered && (k === 'Enter' || k === ' ')) { e.preventDefault(); return nextQuestion(); }
@@ -196,4 +204,61 @@ $('cl-delete').onclick = () => {
 };
 $('data-info').textContent = `Reg M-C · ${usage.teams} Limitless teams · usage updated ${usage.updated.slice(0, 10)} · Meta = top 20% (${META.length} Pokémon)`;
 
-nextQuestion();
+// ---- How fast? mode: type the unmodified Speed stat (base + 20) ----
+let hfMon: Mon | null = null;
+let hfAnswered = false;
+function nextHowFast() {
+  const p = pool();
+  let m = p[Math.floor(Math.random() * p.length)];
+  while (p.length > 1 && m === hfMon) m = p[Math.floor(Math.random() * p.length)];
+  hfMon = m ?? null;
+  hfAnswered = false;
+  $('result').hidden = true;
+  const input = $<HTMLInputElement>('hf-input');
+  input.value = '';
+  input.disabled = false;
+  $('hf-submit').hidden = false;
+  $('hf-card').innerHTML = hfMon
+    ? `${hfMon.sprite ? `<img src="${SPRITES}${hfMon.sprite}.webp" alt="" width="96" height="96">` : ''}<span class="name">${esc(hfMon.name)}</span>`
+    : 'This list has no Pokémon. Pick another in Settings.';
+  renderScore();
+  input.focus();
+}
+$('hf-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!hfMon || hfAnswered) return;
+  const input = $<HTMLInputElement>('hf-input');
+  const guess = Number(input.value);
+  if (!input.value) return;
+  hfAnswered = true;
+  input.disabled = true;
+  $('hf-submit').hidden = true;
+  const correct = hfMon.spe + 20;
+  const right = guess === correct;
+  const s = streak();
+  s.cur = right ? s.cur + 1 : 0;
+  s.best = Math.max(s.best, s.cur);
+  save();
+  const off = guess - correct;
+  $('result').innerHTML = `<h2 class="${right ? 'ok' : 'no'}">${right ? '✓ Correct' : `✗ Off by ${off > 0 ? '+' : ''}${off}`}</h2>
+    <div class="big">${correct}</div><p class="meta">${esc(hfMon.name)}: base ${hfMon.spe} + 20</p>
+    <button id="next">Next <kbd>Enter</kbd></button>`;
+  $('result').hidden = false;
+  $('next').onclick = nextHowFast;
+  $('next').focus();
+  renderScore();
+});
+
+function setMode(mode: State['mode']) {
+  state.mode = mode;
+  save();
+  $('howfast').hidden = mode !== 'howfast';
+  for (const id of ['board', 'field']) $(id).hidden = mode !== 'moves';
+  document.querySelector<HTMLElement>('.keys')!.hidden = mode !== 'moves';
+  $('mode-moves').classList.toggle('on', mode === 'moves');
+  $('mode-howfast').classList.toggle('on', mode === 'howfast');
+  nextQuestion();
+}
+$('mode-moves').onclick = () => setMode('moves');
+$('mode-howfast').onclick = () => setMode('howfast');
+setMode(state.mode);

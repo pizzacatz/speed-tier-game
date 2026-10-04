@@ -10,12 +10,23 @@
 </head>
 <body>
   <header>
-    <h1>Who moves first?</h1>
+    <nav class="modes">
+      <button id="mode-moves" data-mode="moves">Who moves first?</button>
+      <button id="mode-howfast" data-mode="howfast">How fast?</button>
+    </nav>
     <div class="score"><span>Streak <b id="streak">0</b></span><span>Best <b id="best">0</b></span></div>
     <button id="open-settings" aria-label="Settings">⚙</button>
   </header>
   <p id="meta" class="meta"></p>
   <p id="field" class="field"></p>
+  <section id="howfast" hidden>
+    <form id="hf-form" class="hf">
+      <div id="hf-card" class="card"></div>
+      <label for="hf-input">Speed stat (base + 20)</label>
+      <input id="hf-input" type="number" inputmode="numeric" autocomplete="off" min="1" max="300" required />
+      <button id="hf-submit">Submit <kbd>Enter</kbd></button>
+    </form>
+  </section>
   <main id="board">
     <button class="card" id="card-a" data-pick="a"></button>
     <button class="tie" id="tie" data-pick="tie">Tie<kbd>↓</kbd></button>
